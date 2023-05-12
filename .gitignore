@@ -1,0 +1,4 @@
+venv/*
+ratings.csv
+__pycache__/*
+.idea/*
