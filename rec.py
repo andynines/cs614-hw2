@@ -13,10 +13,12 @@ train, test = random_train_test_split(interactions, test_percentage=TEST_PERCENT
 
 model = LightFM(
     loss='warp',
-    learning_rate=0.01,
+    learning_rate=0.001,
     random_state=0,
+    user_alpha=0.01,
+    item_alpha=0.01,
 )
-model.fit(train, epochs=1, num_threads=1, verbose=True)
+model.fit(train, epochs=10, num_threads=1, verbose=True)
 
 print("Train precision: %.2f" % precision_at_k(model, train, k=5).mean())
 print("Test precision: %.2f" % precision_at_k(model, test, k=5).mean())
