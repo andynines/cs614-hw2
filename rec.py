@@ -1,19 +1,14 @@
 from rating import ratings
 
 import numpy as np
+from scipy import sparse
 from lightfm import LightFM
-from lightfm.data import Dataset
 from lightfm.cross_validation import random_train_test_split
 from lightfm.evaluation import precision_at_k
 
 TEST_PERCENT = 0.2
 
-user_ids = np.arange(ratings.shape[0])
-joke_ids = np.arange(ratings.shape[1])
-
-dataset = Dataset()
-dataset.fit(user_ids, joke_ids)
-interactions, _ = dataset.build_interactions(zip(*np.nonzero(ratings), ratings.ravel()))
+interactions = sparse.coo_matrix(ratings)
 train, test = random_train_test_split(interactions, test_percentage=TEST_PERCENT, random_state=0)
 
 model = LightFM(
