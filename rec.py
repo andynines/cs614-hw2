@@ -1,30 +1,26 @@
 from rating import ratings
 
 import numpy as np
-from scipy import sparse
 from lightfm import LightFM
+from lightfm.data import Dataset
+from lightfm.cross_validation import random_train_test_split
 from lightfm.evaluation import precision_at_k
 
-TRAIN_PORTION = 0.66
+TEST_PERCENT = 0.2
 
-np.random.seed(0)
-n_items = ratings.shape[1]
-inds = np.arange(n_items)
-np.random.shuffle(inds)
-split_ind = round(n_items * TRAIN_PORTION)
-train_inds, test_inds = inds[:split_ind], inds[split_ind:]
-interactions_train = ratings.copy()
-interactions_train[:, test_inds] = 0
-interactions_train = sparse.coo_matrix(interactions_train)
-interactions_test = ratings.copy()
-interactions_test[:, train_inds] = 0
-interactions_test = sparse.coo_matrix(interactions_test)
+user_ids = np.arange(ratings.shape[0])
+joke_ids = np.arange(ratings.shape[1])
+
+dataset = Dataset()
+dataset.fit(user_ids, joke_ids)
+interactions, _ = dataset.build_interactions(zip(user_ids, np.where(ratings != 0)[1], ratings[np.nonzero(ratings)]))
+train, test = random_train_test_split(interactions, test_percentage=TEST_PERCENT, random_state=0)
 
 model = LightFM(loss='warp')
-model.fit(interactions_train, epochs=1, num_threads=1)
+model.fit(interactions, epochs=1, num_threads=1)
 
-print("Train precision: %.2f" % precision_at_k(model, interactions_train, k=5).mean())
-print("Test precision: %.2f" % precision_at_k(model, interactions_test, k=5).mean())
+print("Train precision: %.2f" % precision_at_k(model, train, k=5).mean())
+print("Test precision: %.2f" % precision_at_k(model, test, k=5).mean())
 
 def sample_recommendation(model, data, user_ids):
     # number of users and movies in training data
