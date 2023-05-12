@@ -21,11 +21,9 @@ else:
     ratings = ratings[:, 1:]
     unrated_inds = (ratings == 99)
     ratings[unrated_inds] = np.nan
-    ratings -= np.nanmean(ratings, axis=1).reshape(-1, 1)
-    ratestd = np.nanstd(ratings, axis=1).reshape(-1, 1)
-    ratestd[ratestd == 0] = 1
-    ratings /= ratestd
-    ratings += 10
+    ratings *= 9
+    ratings += 110
+    ratings /= 20
     ratings[unrated_inds] = 0
     np.savetxt("ratings.csv", ratings, delimiter=',')
 
