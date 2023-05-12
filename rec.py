@@ -16,7 +16,11 @@ dataset.fit(user_ids, joke_ids)
 interactions, _ = dataset.build_interactions(zip(*np.nonzero(ratings), ratings.ravel()))
 train, test = random_train_test_split(interactions, test_percentage=TEST_PERCENT, random_state=0)
 
-model = LightFM(loss='warp')
+model = LightFM(
+    loss='warp',
+    learning_rate=0.01,
+    random_state=0,
+)
 model.fit(train, epochs=1, num_threads=1, verbose=True)
 
 print("Train precision: %.2f" % precision_at_k(model, train, k=5).mean())
