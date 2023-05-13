@@ -1,6 +1,5 @@
 from rating import ratings
 
-import numpy as np
 from scipy import sparse
 from lightfm import LightFM
 from lightfm.cross_validation import random_train_test_split
@@ -22,33 +21,3 @@ model.fit(train, epochs=10, num_threads=1, verbose=True)
 
 print("Train precision: %.2f" % precision_at_k(model, train, k=5).mean())
 print("Test precision: %.2f" % precision_at_k(model, test, k=5).mean())
-
-def sample_recommendation(model, data, user_ids):
-    # number of users and movies in training data
-    n_users, n_items = data['train'].shape
-
-    # generate recommendations for each user we input
-    for user_id in user_ids:
-
-        # movies they already like
-        known_positives = data['item_labels'][data['train'].tocsr()[user_id].indices]
-
-        # movies our model predicts they will like
-        scores = model.predict(user_id, np.arange(n_items))
-        # rank them in order of most liked to least
-        top_items = data['item_labels'][np.argsort(-scores)]
-
-        # print out the results
-        print("User %s" % user_id)
-        print("     Known positives:")
-
-        for x in known_positives[:3]:
-            print("        %s" % x)
-
-        print("     Recommended:")
-
-        for x in top_items[:3]:
-            print("        %s" % x)
-
-
-#sample_recommendation(model, data, [3, 25, 450])

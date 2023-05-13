@@ -18,7 +18,14 @@ else:
                 [float(x) for x in row]
                 for row in reader]
             ratings = np.concatenate((ratings, new_rows), axis=0)
+    # Insert test user preferences
+    with open("toni-ratings.dat", 'r') as ratef:
+        user_ratings = eval(ratef.read())
+    user_vector = [0] * 100
+    for ind, rating in user_ratings.items():
+        user_vector[ind] = rating
     ratings = ratings[:, 1:]
+    ratings = np.concatenate((ratings, [user_vector]), axis=0)
     unrated_inds = (ratings == 99)
     ratings[unrated_inds] = np.nan
     ratings *= 9
