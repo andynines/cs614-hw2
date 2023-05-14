@@ -19,7 +19,7 @@ else:
                 for row in reader]
             ratings = np.concatenate((ratings, new_rows), axis=0)
     # Insert test user preferences
-    with open("toni-ratings.dat", 'r') as ratef:
+    with open("user-ratings.dat", 'r') as ratef:
         user_ratings = eval(ratef.read())
     user_vector = [0] * 100
     for ind, rating in user_ratings.items():
